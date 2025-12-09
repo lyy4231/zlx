@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园跑打卡系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #7f8c8d;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        /* 登录页面 */
+        #loginPage {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+        
+        .logo h1 {
+            color: var(--primary);
+            font-size: 2rem;
+        }
+        
+        .login-subtitle {
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .demo-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .demo-info p {
+            color: var(--dark);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        /* 打卡页面 */
+        #dashboardPage {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card-title {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .records-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .record-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .record-date {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .record-type {
+            background: var(--primary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .record-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .record-detail span {
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .no-records {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .no-records i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .record-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            #loginPage, #dashboardPage {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .record-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div class="container">
+        <div id="loginPage">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-running"></i>
+                    <h1>校园跑打卡系统</h1>
+                </div>
+                <p class="login-subtitle">登录后开始您的跑步打卡</p>
+            </div>
+            
+            <div id="loginMessage" class="message"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user-graduate"></i> 学号</label>
+                    <input type="text" id="studentId" placeholder="请输入学号" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> 密码</label>
+                    <input type="password" id="password" placeholder="请输入密码" required>
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> 登录系统
+                </button>
+            </form>
+            
+            <div class="demo-info">
+                <p><strong>演示账号：</strong></p>
+                <p>学号: 2021001 密码: 123456 (张三)</p>
+                <p>学号: 2021002 密码: 123456 (李四)</p>
+                <p>学号: 2021003 密码: 123456 (王五)</p>
+            </div>
+        </div>
+        
+        <!-- 打卡页面 -->
+        <div id="dashboardPage">
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <h2><i class="fas fa-running"></i> 校园跑打卡</h2>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">张</div>
+                        <div>
+                            <div id="userName">张三</div>
+                            <div id="userClass" style="font-size: 0.9rem;">大数据A班</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> 退出登录
+                </button>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- 左侧边栏 -->
+                <div class="sidebar">
+                    <!-- 个人信息 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-user"></i> 个人信息</h3>
+                        <div class="form-group">
+                            <label>学号</label>
+                            <input type="text" id="dashboardStudentId" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>今日目标</label>
+                            <select id="dailyGoal">
+                                <option value="2">2公里</option>
+                                <option value="3" selected>3公里</option>
+                                <option value="5">5公里</option>
+                                <option value="8">8公里</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 今日统计 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-chart-line"></i> 今日统计</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="todayRuns">0</div>
+                                <div class="stat-label">打卡次数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="todayDistance">0</div>
+                                <div class="stat-label">里程(km)</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="todayTime">0</div>
+                                <div class="stat-label">时长(min)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 主内容区 -->
+                <div class="main-content">
+                    <!-- 打卡消息 -->
+                    <div id="dashboardMessage" class="message"></div>
+                    
+                    <!-- 打卡表单 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-flag-checkered"></i> 跑步打卡</h3>
+                        <form id="runForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-calendar"></i> 日期</label>
+                                    <input type="date" id="runDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-clock"></i> 时间</label>
+                                    <input type="time" id="runTime" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-route"></i> 距离(km)</label>
+                                    <input type="number" id="distance" min="0.1" max="50" step="0.1" placeholder="例如：3.5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-stopwatch"></i> 时长(分钟)</label>
+                                    <input type="number" id="duration" min="1" max="300" placeholder="例如：30" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-running"></i> 跑步类型</label>
+                                <select id="runType" required>
+                                    <option value="">请选择类型</option>
+                                    <option value="晨跑">晨跑</option>
+                                    <option value="夜跑">夜跑</option>
+                                    <option value="自由跑">自由跑</option>
+                                    <option value="体育课">体育课</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-map-marker-alt"></i> 跑步地点</label>
+                                <input type="text" id="location" placeholder="例如：学校操场">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-sticky-note"></i> 备注</label>
+                                <textarea id="notes" placeholder="记录今天的跑步感受..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check-circle"></i> 提交打卡
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- 打卡记录 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-history"></i> 打卡记录</h3>
+                        <div class="records-container" id="recordsContainer">
+                            <div class="no-records">
+                                <i class="fas fa-clipboard-list"></i>
+                                <p>暂无打卡记录</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome 图标库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        // 模拟用户数据库
+        const users = [
+            { id: '2021001', password: '123456', name: '张三', class: '大数据A班' },
+            { id: '2021002', password: '123456', name: '李四', class: '计算机科学B班' },
+            { id: '2021003', password: '123456', name: '王五', class: '软件工程C班' }
+        ];
+
+        // 当前登录用户
+        let currentUser = null;
+
+        // DOM元素
+        const loginPage = document.getElementById('loginPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+        const loginForm = document.getElementById('loginForm');
+        const runForm = document.getElementById('runForm');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const loginMessage = document.getElementById('loginMessage');
+        const dashboardMessage = document.getElementById('dashboardMessage');
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否有保存的登录状态
+            const savedUser = localStorage.getItem('runUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+            
+            // 设置日期默认值
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('runDate').value = today;
+            document.getElementById('runDate').max = today;
+            
+            // 绑定事件
+            loginForm.addEventListener('submit', handleLogin);
+            runForm.addEventListener('submit', handleRunSubmit);
+            logoutBtn.addEventListener('click', handleLogout);
+        });
+
+        // 处理登录
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const studentId = document.getElementById('studentId').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!studentId || !password) {
+                showMessage(loginMessage, '请输入学号和密码', 'error');
+                return;
+            }
+            
+            // 查找用户
+            const user = users.find(u => u.id === studentId && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                
+                // 保存登录状态到本地存储
+                localStorage.setItem('runUser', JSON.stringify(user));
+                
+                // 显示成功消息
+                showMessage(loginMessage, '登录成功！正在跳转...', 'success');
+                
+                // 延迟跳转到打卡页面
+                setTimeout(() => {
+                    showDashboard();
+                }, 1000);
+            } else {
+                showMessage(loginMessage, '学号或密码错误，请使用演示账号', 'error');
+            }
+        }
+
+        // 显示消息
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = `message ${type}`;
+            
+            setTimeout(() => {
+                element.textContent = '';
+                element.className = 'message';
+            }, 3000);
+        }
+
+        // 显示打卡页面
+        function showDashboard() {
+            // 更新用户信息
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userClass').textContent = currentUser.class;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+            document.getElementById('dashboardStudentId').value = currentUser.id;
+            
+            // 切换页面
+            loginPage.style.display = 'none';
+            dashboardPage.style.display = 'block';
+            
+            // 加载用户数据
+            loadUserData();
+        }
+
+        // 退出登录
+        function handleLogout() {
+            if (confirm('确定要退出登录吗？')) {
+                currentUser = null;
+                localStorage.removeItem('runUser');
+                
+                // 重置表单
+                loginForm.reset();
+                
+                // 切换回登录页面
+                dashboardPage.style.display = 'none';
+                loginPage.style.display = 'block';
+                
+                showMessage(loginMessage, '已退出登录', 'success');
+            }
+        }
+
+        // 提交跑步打卡
+        function handleRunSubmit(e) {
+            e.preventDefault();
+            
+            const runDate = document.getElementById('runDate').value;
+            const runTime = document.getElementById('runTime').value;
+            const distance = parseFloat(document.getElementById('distance').value);
+            const duration = parseInt(document.getElementById('duration').value);
+            const runType = document.getElementById('runType').value;
+            const location = document.getElementById('location').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            
+            // 验证输入
+            if (!runDate || !runTime || !distance || !duration || !runType) {
+                showMessage(dashboardMessage, '请填写所有必填项', 'error');
+                return;
+            }
+            
+            // 创建打卡记录
+            const record = {
+                id: Date.now(),
+                date: runDate,
+                time: runTime,
+                distance: distance,
+                duration: duration,
+                type: runType,
+                location: location || '未指定',
+                notes: notes || '无',
+                timestamp: new Date().toISOString()
+            };
+            
+            // 保存记录
+            saveRunRecord(record);
+            
+            // 重置表单
+            document.getElementById('distance').value = '';
+            document.getElementById('duration').value = '';
+            document.getElementById('notes').value = '';
+            document.getElementById('location').value = '';
+            
+            // 显示成功消息
+            showMessage(dashboardMessage, `打卡成功！已记录${distance}km的${runType}`, 'success');
+            
+            // 重新加载数据
+            loadUserData();
+        }
+
+        // 保存跑步记录
+        function saveRunRecord(record) {
+            const records = JSON.parse(localStorage.getItem(`runRecords_${currentUser.id}`) || '[]');
+            records.push(record);
+            localStorage.setItem(`runRecords_${currentUser.id}`, JSON.stringify(records));
+        }
+
+        // 加载用户数据
+        function loadUserData() {
+            // 获取所有记录
+            const records = JSON.parse(localStorage.getItem(`runRecords_${currentUser.id}`) || '[]');
+            
+            // 获取今天的日期
+            const today = new Date().toISOString().split('T')[0];
+            
+            // 筛选今天的记录
+            const todayRecords = records.filter(r => r.date === today);
+            
+            // 计算统计数据
+            const todayRuns = todayRecords.length;
+            const todayDistance = todayRecords.reduce((sum, r) => sum + r.distance, 0);
+            const todayTime = todayRecords.reduce((sum, r) => sum + r.duration, 0);
+            
+            // 更新统计显示
+            document.getElementById('todayRuns').textContent = todayRuns;
+            document.getElementById('todayDistance').textContent = todayDistance.toFixed(1);
+            document.getElementById('todayTime').textContent = todayTime;
+            
+            // 显示记录列表
+            displayRecords(records);
+        }
+
+        // 显示打卡记录
+        function displayRecords(records) {
+            const container = document.getElementById('recordsContainer');
+            
+            if (records.length === 0) {
+                container.innerHTML = `
+                    <div class="no-records">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>暂无打卡记录，开始第一次跑步吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 按日期倒序排序
+            records.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            container.innerHTML = records.map(record => `
+                <div class="record-item">
+                    <div class="record-header">
+                        <div class="record-date">
+                            ${record.date} ${record.time}
+                        </div>
+                        <div class="record-type">${record.type}</div>
+                    </div>
+                    <div class="record-details">
+                        <div><span>距离:</span> ${record.distance}km</div>
+                        <div><span>时长:</span> ${record.duration}分钟</div>
+                        <div><span>地点:</span> ${record.location}</div>
+                        <div><span>备注:</span> ${record.notes}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 添加演示数据（首次访问时）
+        if (!localStorage.getItem('demoLoaded')) {
+            // 为每个用户添加演示数据
+            users.forEach(user => {
+                const demoRecords = [
+                    {
+                        id: 1,
+                        date: new Date().toISOString().split('T')[0],
+                        time: '07:30',
+                        distance: 3.5,
+                        duration: 25,
+                        type: '晨跑',
+                        location: '学校操场',
+                        notes: '早晨空气清新',
+                        timestamp: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+                        time: '18:45',
+                        distance: 4.2,
+                        duration: 30,
+                        type: '夜跑',
+                        location: '校园环路',
+                        notes: '夜晚凉爽',
+                        timestamp: new Date(Date.now() - 86400000).toISOString()
+                    }
+                ];
+                
+                localStorage.setItem(`runRecords_${user.id}`, JSON.stringify(demoRecords));
+            });
+            
+            localStorage.setItem('demoLoaded', 'true');
+        }
+    </script>
+</body>
+</html>
