@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园跑打卡系统</title>
+    <link rel="stylesheet" href="style.css">
+</head> 
+<body>
+    <!-- 登录页面 -->
+    <div class="container">
+        <div id="loginPage">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-running"></i>
+                    <h1>校园跑打卡系统</h1>
+                </div>
+                <p class="login-subtitle">登录后开始您的跑步打卡</p>
+            </div>
+            
+            <div id="loginMessage" class="message"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fas fa-user-graduate"></i> 学号</label>
+                    <input type="text" id="studentId" placeholder="请输入学号" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> 密码</label>
+                    <input type="password" id="password" placeholder="请输入密码" required>
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> 登录系统
+                </button>
+            </form>
+            
+            <div class="demo-info">
+                <p><strong>演示账号：</strong></p>
+                <p>学号: 2021001 密码: 123456 (张三)</p>
+                <p>学号: 2021002 密码: 123456 (李四)</p>
+                <p>学号: 2021003 密码: 123456 (王五)</p>
+            </div>
+        </div>
+        
+        <!-- 打卡页面 -->
+        <div id="dashboardPage">
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <h2><i class="fas fa-running"></i> 校园跑打卡</h2>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">张</div>
+                        <div>
+                            <div id="userName">张三</div>
+                            <div id="userClass" style="font-size: 0.9rem;">大数据A班</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> 退出登录
+                </button>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- 左侧边栏 -->
+                <div class="sidebar">
+                    <!-- 个人信息 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-user"></i> 个人信息</h3>
+                        <div class="form-group">
+                            <label>学号</label>
+                            <input type="text" id="dashboardStudentId" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>今日目标</label>
+                            <select id="dailyGoal">
+                                <option value="2">2公里</option>
+                                <option value="3" selected>3公里</option>
+                                <option value="5">5公里</option>
+                                <option value="8">8公里</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 今日统计 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-chart-line"></i> 今日统计</h3>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="todayRuns">0</div>
+                                <div class="stat-label">打卡次数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="todayDistance">0</div>
+                                <div class="stat-label">里程(km)</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="todayTime">0</div>
+                                <div class="stat-label">时长(min)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 主内容区 -->
+                <div class="main-content">
+                    <!-- 打卡消息 -->
+                    <div id="dashboardMessage" class="message"></div>
+                    
+                    <!-- 打卡表单 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-flag-checkered"></i> 跑步打卡</h3>
+                        <form id="runForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-calendar"></i> 日期</label>
+                                    <input type="date" id="runDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-clock"></i> 时间</label>
+                                    <input type="time" id="runTime" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-route"></i> 距离(km)</label>
+                                    <input type="number" id="distance" min="0.1" max="50" step="0.1" placeholder="例如：3.5" required>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-stopwatch"></i> 时长(分钟)</label>
+                                    <input type="number" id="duration" min="1" max="300" placeholder="例如：30" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-running"></i> 跑步类型</label>
+                                <select id="runType" required>
+                                    <option value="">请选择类型</option>
+                                    <option value="晨跑">晨跑</option>
+                                    <option value="夜跑">夜跑</option>
+                                    <option value="自由跑">自由跑</option>
+                                    <option value="体育课">体育课</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-map-marker-alt"></i> 跑步地点</label>
+                                <input type="text" id="location" placeholder="例如：学校操场">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-sticky-note"></i> 备注</label>
+                                <textarea id="notes" placeholder="记录今天的跑步感受..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check-circle"></i> 提交打卡
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- 打卡记录 -->
+                    <div class="card">
+                        <h3 class="card-title"><i class="fas fa-history"></i> 打卡记录</h3>
+                        <div class="records-container" id="recordsContainer">
+                            <div class="no-records">
+                                <i class="fas fa-clipboard-list"></i>
+                                <p>暂无打卡记录</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome 图标库 -->
+    <script src="script,.js"></script>
+    
+   
+</body>
+</html>
